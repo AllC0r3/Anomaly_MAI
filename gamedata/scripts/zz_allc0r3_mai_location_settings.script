@@ -1,0 +1,15 @@
+mai_always_ignore_levels = {
+    ["jupiter_underground"] = true, --подземка
+    ["l03u_agr_underground"] = true, --подземка
+    ["l08u_brainlab"] = true, --подземка
+    ["l10u_bunker"] = true, --подземка
+    ["l12u_control_monolith"] = true, --подземка
+    ["l12u_sarcofag"] = true, --подземка
+    ["l13u_warlab"] = true, --подземка
+    ["labx8"] = true, --подземка
+	["l11_hospital"] = true, -- слишком маленькая локация
+	["bunker_a1"] = true, --подземка
+	["collaider"] = true, --подземка
+	["y04_pole"] = true, -- маленькая
+	["zorius_atp_balls"] = true, --маленькая
+}

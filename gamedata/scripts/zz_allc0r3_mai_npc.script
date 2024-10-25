@@ -1,0 +1,77 @@
+local _dbg = zz_allc0r3_mai_main._dbg_printf
+local sn = script_name()
+
+function mai_on_npc_net_spawn(npc, sobj)
+	zz_allc0r3_mai_main.mai_subscribe(npc, "npc", "~[MAI]["..sn.."][mai_on_npc_net_spawn] TRY SUBSCRIBE NPC ["..npc:name().."]")
+end
+
+function mai_on_npc_update(npc, st)
+	zz_allc0r3_mai_main.mai_evade(npc, "npc")
+end
+
+function mai_on_npc_death(npc, who)
+	zz_allc0r3_mai_main.mai_unsubscribe(npc, "npc", "~[MAI]["..sn.."][mai_on_npc_death] TRY UNSUBSCRIBE NPC ["..npc:name().."] WHO ["..who:name().."]")
+end
+
+function mai_on_npc_net_destroy(npc)
+	zz_allc0r3_mai_main.mai_unsubscribe(npc, "npc", "~[MAI]["..sn.."][mai_on_npc_net_destroy] TRY UNSUBSCRIBE NPC ["..npc:name().."]")
+end
+
+function mai_on_npc_community_change(npc, comm)
+	zz_allc0r3_mai_main.mai_unsubscribe(npc, "npc", "~[MAI]["..sn.."][mai_on_npc_community_change] TRY UNSUBSCRIBE NPC ["..npc:name().."]")
+	zz_allc0r3_mai_main.mai_subscribe(npc, "npc", "~[MAI]["..sn.."][mai_on_npc_community_change] TRY SUBSCRIBE NPC ["..npc:name().."]")
+end
+
+function mai_on_npc_companion_change(npc, comp)
+	zz_allc0r3_mai_main.mai_unsubscribe(npc, "npc", "~[MAI]["..sn.."][mai_on_npc_companion_change] TRY UNSUBSCRIBE NPC ["..npc:name().."]")
+	zz_allc0r3_mai_main.mai_subscribe(npc, "npc", "~[MAI]["..sn.."][mai_on_npc_companion_change] TRY SUBSCRIBE NPC ["..npc:name().."]")
+end
+
+function mai_on_npc_corpse_loot(npc, corpse_looting)
+	if corpse_looting then
+		zz_allc0r3_mai_main.mai_unsubscribe(npc, "npc", "~[MAI]["..sn.."][mai_on_npc_corpse_loot] TRY UNSUBSCRIBE NPC ["..npc:name().."]")
+	else
+		zz_allc0r3_mai_main.mai_subscribe(npc, "npc", "~[MAI]["..sn.."][mai_on_npc_corpse_loot] TRY SUBSCRIBE NPC ["..npc:name().."]")
+	end
+end
+
+
+function mai_on_npc_before_hit(npc,shit,bone_id,flags)
+	if not npc then return end
+	local cur_level = level.name()
+	if IsAnomaly(shit.draftsman) then
+		local anomaly = shit.draftsman
+		if zz_allc0r3_mai_main.surge_started() then
+			flags.ret_value = false
+			_dbg("~[MAI][%s][mai_on_npc_before_hit] SURGE, DONT DAMAGE ANY NPC, %s", sn, anomaly:name())
+			return		
+		end
+		if zz_allc0r3_mai_main.is_always_skip_anomalies(anomaly) then
+			flags.ret_value = false
+			_dbg("~[MAI][%s][mai_on_npc_before_hit] IGNORE ANOMALY[%s], DONT DAMAGE", sn, anomaly:name())
+			return
+		end
+		if not zz_allc0r3_mai_main.mai_subscribed(npc, "npc") or (zz_allc0r3_mai_main.mai_mob_session[id] and zz_allc0r3_mai_main.mai_mob_session[id].subscribe == false)  then
+			flags.ret_value = false
+			_dbg("~[MAI][%s][mai_on_npc_before_hit] NOT SUBSCRIBED NPC[%s], DONT DAMAGE, %s", sn, npc:name(), anomaly:name())
+			return			
+		end
+		if zz_allc0r3_mai_main.is_npc_ignore_anom(npc, anomaly) then
+			flags.ret_value = false
+			_dbg("~[MAI][%s][mai_on_npc_before_hit] IGNORE THIS ANOM[%s], DONT DAMAGE, %s", sn, npc:name(), anomaly:name())
+			return					
+		end
+		_dbg("-[MAI][%s][mai_on_npc_before_hit] SUBSCRIBED NPC[%s], DAMAGED BY %s", sn, npc:name(), anomaly:name())
+	end
+end
+
+function on_game_start()
+	RegisterScriptCallback("npc_on_net_spawn",mai_on_npc_net_spawn)
+	RegisterScriptCallback("npc_on_net_destroy",mai_on_npc_net_destroy)
+	RegisterScriptCallback("npc_on_death_callback_new",mai_on_npc_death)
+	RegisterScriptCallback("npc_on_update",mai_on_npc_update)
+	RegisterScriptCallback("npc_on_before_hit", mai_on_npc_before_hit)
+	RegisterScriptCallback("npc_on_community_change", mai_on_npc_community_change)
+	RegisterScriptCallback("npc_on_companion_change", mai_on_npc_companion_change)
+	RegisterScriptCallback("npc_on_corpse_loot", mai_on_npc_corpse_loot)
+end

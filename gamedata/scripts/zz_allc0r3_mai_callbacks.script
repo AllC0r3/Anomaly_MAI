@@ -1,0 +1,111 @@
+--just some new callbacks
+npc_table = {}
+local sn = script_name()
+function npc_on_net_spawn(npc, sobj)
+	local id = npc:id()  
+	if not npc_table[id] then
+		local vis = npc:get_visual_name()
+		local comp = npc:has_info("npcx_is_companion")
+		local comm = npc:character_community()
+		local level = level.name() 
+		npc_table[id] = {}
+		npc_table[id][1] = vis 
+		npc_table[id][2] = comm
+		npc_table[id][3] = comp
+		npc_table[id][4] = level
+		npc_table[id][5] = xr_corpse_detection.is_under_corpse_detection(npc)
+	end
+end
+function npc_on_net_destroy(npc)
+	npc_table[npc:id()] = nil
+end
+function npc_on_death_callback(npc, who)
+	npc_table[npc:id()] = nil
+end
+AddScriptCallback("npc_on_visual_change")
+AddScriptCallback("npc_on_community_change")
+AddScriptCallback("npc_on_companion_change")
+AddScriptCallback("npc_on_level_change")
+AddScriptCallback("npc_on_corpse_loot")
+function npc_on_update(npc, st)
+    if not npc or not npc:alive() or not npc_table[npc:id()] then
+        return
+    end
+	local id = npc:id()
+	local vis = npc:get_visual_name()
+	local comp = npc:has_info("npcx_is_companion")
+	local comm = npc:character_community()
+	local level = level.name()
+	local corpse_loot = xr_corpse_detection.is_under_corpse_detection(npc)
+	if npc_table[id][1] ~= vis then
+		npc_table[id][1] = vis
+		SendScriptCallback("npc_on_visual_change", npc, vis)
+	end
+	if npc_table[id][3] ~= comp then
+		npc_table[id][3] = comp
+		SendScriptCallback("npc_on_companion_change", npc, comp)
+	end	
+	if npc_table[id][2] ~= comm then
+		npc_table[id][2] = comm
+		SendScriptCallback("npc_on_community_change", npc, comm)
+	end	
+	if npc_table[id][4] ~= level then
+		npc_table[id][4] = level
+		SendScriptCallback("npc_on_level_change", npc, level)
+	end
+	if npc_table[id][5] ~= corpse_loot then
+		npc_table[id][5] = corpse_loot
+		SendScriptCallback("npc_on_corpse_loot", npc, corpse_loot)
+	end
+end
+AddScriptCallback("tm_give_task")
+ogive_task = task_manager.CRandomTask.give_task
+function task_manager.CRandomTask.give_task(self, task_id, task_giver_id)
+	ogive_task(self, task_id, task_giver_id)
+	printf("%s - give task %s -> %s", sn, task_giver_id, task_id)
+	SendScriptCallback("tm_give_task", task_giver_id, task_id)
+end
+AddScriptCallback("tm_complete_task")
+otask_complete = task_manager.task_complete
+function task_manager.task_complete(task_id)
+	if otask_complete(task_id) then
+		SendScriptCallback("tm_complete_task", task_id)
+		printf("%s - complete task %s", sn,  task_id)
+	end
+	return otask_complete(task_id)
+end
+AddScriptCallback("tm_fail_task")
+otask_fail = task_manager.task_fail
+function task_manager.task_fail(task_id)
+	if otask_fail(task_id) then
+		SendScriptCallback("tm_fail_task", task_id)
+		printf("%s - fail task %s", sn,  task_id)
+	end
+	return otask_fail(task_id)
+end
+function load_state(mdata)
+	npc_table = mdata.AllC0r3_npc_table or {}
+end
+function save_state(mdata)
+	mdata.AllC0r3_npc_table = npc_table
+end
+function server_entity_on_unregister(se_obj)
+	npc_table[se_obj.id] = nil
+end
+AddScriptCallback("npc_on_death_callback_new")
+npc_death_callback = xr_motivator.motivator_binder.death_callback
+function xr_motivator.motivator_binder.death_callback(self, victim, who)
+	npc_death_callback(self, victim, who)
+	if who and (IsStalker(who) or IsMonster(who) or IsAnomaly(who)) then
+		SendScriptCallback("npc_on_death_callback_new", victim, who)
+	end
+end
+function on_game_start()
+    RegisterScriptCallback("npc_on_net_spawn",npc_on_net_spawn)
+    RegisterScriptCallback("npc_on_net_destroy",npc_on_net_destroy)
+    RegisterScriptCallback("npc_on_death_callback",npc_on_death_callback)
+    RegisterScriptCallback("npc_on_update", npc_on_update)
+	RegisterScriptCallback("load_state", load_state)
+	RegisterScriptCallback("save_state", save_state)
+	RegisterScriptCallback("server_entity_on_unregister", server_entity_on_unregister)
+end
