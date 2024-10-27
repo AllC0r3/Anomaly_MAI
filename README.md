@@ -1,87 +1,95 @@
+Mobs. Anomalies. Interaction - Finally, the NPCs have learned stay out of Anomalies.
+
 MAI – Mobs.Anomalies.Interaction
 
 -РУССКИЙ
 
-Краткое описание:
+Долгое время в Anomaly была "проблема": НПС не избегали аномалий, и не получали от них урон. Mobs.Anomalies.Interaction (MAI) помогает решить эту проблему.
 
-Меня очень долго смущало что НПС не взаимодействуют с Аномалиями в Аномалии. Когда это был чуть ли не первый мод в истории серии СТАЛКЕР. Данный мод призван решить эту «проблему". Теперь НПС обходят Аномалии, следовательно и погибают в них.
+Кто автор?
 
-Условности:
+- "База" обхода аномалий - Ник автора изначальной идеи я к сожалению уже не найду. Подглядел в скрипте ogse_anomaly_evader.script в моде OLR 3.0
 
-НПС обходят Аномалии и это имеют свою цену – чем больше НПС в онлайне (рядом) тем чуть меньше производительность. При 100 онлайновый НПС (с установленным Arrival) у меня проседает производительность примерно на 15 фпс. Все зависит от ситуации, локации, и конкретного места.
+- Список важных НПС взят из мода NPC Die For Real, автор TheMrDemonized
 
-Квестовые НПС, напарники, Торговцы с механиками – защищены от Аномалий, с ними ничего не произойдет и не сломает Ваш забег. (Возможно из некоторых модов НПС не были учтены, если вдруг с моим модом в вашем забеге умер важный НПС – сообщите об этом и я оперативно поправлю).
+Что делает мод?
+
+Мод заставляет НПС ОБХОДИТЬ аномалии.
+
+Поддержка
+
+Если возникнет желание и возможность, можете поддержать меня следующими способами:
+
+TON-Кошелек: UQBp9LQ1T7nj05EKdztDtod7220bhPxeVj_uoG8sAJWm7-V5
+
+Donationalerts: https://www.donationalerts.com/r/allc0r3
+
+Производительность
+
+Чем больше симуляционных НПС в онлайне, тем ниже производительность игры. При 100 онлайновых симуляционных НПС производительность падает примерно на 5 кадров в секунду. Все очень сильно зависит от ситуации, локации, и кол-ва аномалий вокруг НПС.
+
+Краткое описание
+
+Квестовые НПС, напарники, торговцы и механики защищены от аномалий. Некоторые аномалии не наносят урон НПС (список будет при релизе), чтобы не усложнять НПС проход между аномалиями в трудных местах.
+
+Некоторые из них:
+
+Жарки (часть) на Дикой территории в туннеле.
+Аномальные поля на Кордоне: возле тепловоза и деревни.
+Жарки на кладбище техники, Свалка.
+Все движущиеся аномалии.
+
+Качество обхода зависит от группировки, ранга и модели НПС.
+
+Есть исключения:
+
+Грех — дети зоны, поэтому аномалии их не замечают.
+Зомби-сталкеры - иммуны к урону от аномалий.
+Монолитовцы - их защищает Великий Монолит.
+
+Установка
+
+Через Mod Organizer, порядок неважен.
+
+Совместимость
+
+Совместимо со всем кроме модов которые включают урон от Аномалий для НПС.
+Улучшена поддержка New Levels (подземные локации добавлены в исключения).
+Улучшена поддержка DAO\Arrival (некоторые аномалии добавлены в исключения).
+Улучшена поддержка Intimidate Enemies Into Surrendering (при смене группировки у НПС – настройки его меняются на соответствующие)
+Улучшена поддержка Dynamic NPC Armor Visuals
+Поддержка модов на новые группировки: настройки берутся как для одиночки, новичка
+Поддержка модов на новые ранги: настройки берутся как для одиночки, новичка
+
+Планы
+
+Вписать все аномалии, которые могут вызвать проблемы у НПС.
+Удалить аномалии, которые настроены с ошибкой и заспавнить на их места такие же, но уже без ошибок. (Будет отдельным аддоном, следовательно - по желанию)
+Добавить игнорирование аномалий в зависимости от модели НПС. - Готово! (осталось настроить)
+Исключить урон от аномалий для целей заданий. (Частично готово, квестодатель не получает урон от аномалий, осталось сделать для цели задания тоже самое)
+Еще оптимизировать производительность игры.
+Полноценное МСМ-меню.
+Поддержка еще большего кол-ва модов с новыми НПС, Аномалиями, Локациями
+Легендарные монстры, такие как контролёр и бюрер, также могут обходить аномалии. Полтергейст не получает урон от аномалий вовсе.
+Настройка получаемого урона для мутантов (всех)
+В идеале порт CAnomalyDetector из OGSR и CCustomZone getEnabled() вывести в скрипты
+Поддержка Анталогии 1.2 (хотя бы частичная)
+Почему стоит попробовать мод?
+
+Мод Mobs.Anomalies.Interaction (MAI) делает игру более реалистичной и интересной. НПС будут избегать опасных мест, что добавит разнообразия в прохождение игры.
+
+Приятной игры!
+
+--Changelog:
+
+1.01_Beta – 27.10.2024
+
+Базовая поддержка смены визуала НПС и соответственно поддержка получаемого урона в зависимости от визуала (или полного игнорирования некоторых аномалий). Настроено (Сева Бандитов, Свободовцев)
+НПС не получают урон во время добивания раненных
+добавил в исключение Аномалии без радиуса в Рыжем Лесу (позже нужно справить все эти аномалии)
+Сделал переподписание онлайновых НПС после сна игрока
 
 
+1.00_Beta– 25.10.2024
 
-
-Так же напарники не попадают в Аномалии и действуют так же, как и простой игре, они не видят Аномалии и не получают от них урон.
-
-Некоторые аномалии так же не наносят урон НПС, это сделано для того, чтобы не снабжать игрока лутом (так как иногда просто нет возможности для НПС пройти, кроме как не пройти через Аномалию). В основном это аномалии в «Аномальных полях»
-
-Так же Таск гиверы защищены от аномалий, чтобы не омрачать Вам игру.
-
-НПС, которые обыскивают трупы, некоторое время защищены от урона аномалий.
-
-Подземные локации и маленькие локации – на них все работает так же, как и Аномалии без модов, никто не получает урон и не обходит аномалии.
-
-«Качество» обхода аномалий зависит от группировки и ранга конкретного НПС. Есть исключения: Грех – они ДЕТИ ЗОНЫ и аномалии их никак не замечают.
-
-Зомби сталкеры – они иммуны к урону от Аномалий.
-
-Монолит – они иммуны к урону от Аномалий, их защищает Монолит
-
-Зависимости:
-
-ANOMALY MODDED EXES ENGINE MOD by Demonized
-
-Совместимость:
-
-Совместим со всем, кроме модов которые включают НПС урон от Аномалий.
-
-Примечание: Не все моды я пробовал и если в каком-то из модов ВАЖНЫЙ нпс попал в Аномалию и умер от нее – сообщите мне, мы быстро это поправим.
-
-Улучшена совместимость с DAO\ARRIVAl
-
-Улучшена совместимость с NewLevels
-
-Улучшена совместимость с Intimidate Enemies Into Surrendering
-
-Минорные обновления всегда можно найти на моем GitHub
-
---ENG (machine)
-
-MAI – Mobs.Anomalies.Interaction
-
-Short description:
-I've been confused for a very long time that NPCs don't interact with Anomalies in an Anomaly. When it was almost the first mod in the history of the STALKER series. This mod is designed to solve this "problem". Now the NPCs bypass the Anomalies, therefore they die in them.
-
-Conventions:
-NPCs bypass Anomalies and this has its price – the more NPCs online (nearby) the lower the performance. At 100 online NPC (with Arrival installed) my performance is sagging by about 15 fps. It all depends on the situation, location, and specific location.
-Quest NPCs, teammates, Traders with mechanics are protected from Anomalies, nothing will happen to them and will not break your race. (Perhaps NPCs from some mods were not taken into account, if suddenly an important NPC died with my mod in your race – report it and I will promptly correct it).
-
-In the same way, partners do not fall into Anomalies and act in the same way as in a simple game, they do not see Anomalies and do not receive damage from them.
-Some anomalies also do not cause damage to NPCs, this is done in order not to supply the player with loot (since sometimes there is simply no way for NPCs to pass, except not to pass through the Anomaly). Basically, these are anomalies in the "Abnormal fields"
-As well as Task givers are protected from anomalies so as not to overshadow your game.
-NPCs who search corpses are protected from anomaly damage for a while.
-Underground locations and small locations – everything works on them the same way as Anomalies without mods, no one takes damage and does not bypass anomalies.
-The "quality" of anomaly traversal depends on the grouping and rank of a particular NPC. There are exceptions: Sin – they are CHILDREN of the ZONE and anomalies do not notice them in any way.
-Zombie stalkers – they are immune to damage from Anomalies.
-Monolith – they are immune to damage from Anomalies, they are protected by Monolith
-
-
-Dependencies:
-ANOMALY MODDED EXES ENGINE MOD by Demonized
-
-
-Compatibility:
-Compatible with everything except mods that include NPC damage from Anomalies.
-Note: I haven't tried all the mods, and if an IMPORTANT NPC got into an Anomaly in one of the mods and died from it, let me know, we'll fix it quickly.
-Improved compatibility with DAO\ARRIVAl
-Improved compatibility with NewLevels
-Improved compatibility with Intimate Enemies Into Surrendering
-
-
---Changelog
-
-v1.00 - BETA - 25.10.2024 - Initial Release (Update text)
+Первый выпуск
