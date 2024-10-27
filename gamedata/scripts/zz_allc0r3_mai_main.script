@@ -43,14 +43,15 @@ local tc = table.concat
 local tg = table.getn
 local sn = script_name()
 local rd = math.random
+local mai_npc_settings_file = ini_file("plugins\\mai\\mai_visual_settings.ltx")
 
 mai_mob_session = {}
 mai_quest_mob_stor = {} --временное решение, переписать в след версии
+mai_npc_settings_by_visual = {}
 
 
 function mai_npc_anomalies_interaction(npc, pathfinding, damage)
 	npc:set_enable_anomalies_damage(damage)
-	--npc:set_enable_anomalies_pathfinding(pathfinding) --много проблем с этим (true) в аномальных полях, и в подземках и вообще в узких проходах. Мобы просто тупо застревают.
 end
 
 function mai_subscribe(obj, _type, text, force)
@@ -58,6 +59,7 @@ function mai_subscribe(obj, _type, text, force)
 	if not obj then return end
 	local cur_level = level.name()
 	if _type == "npc" then
+		if not obj:alive() then return end
 		if not force then
 			if surge_started() then
 				mai_npc_anomalies_interaction(obj, false, false)
@@ -100,6 +102,8 @@ function mai_subscribe(obj, _type, text, force)
 		mai_mob_session[id].custom_detect_radius_max = get_npc_settings(obj).radius_max
 		mai_mob_session[id].custom_detect_radius = rd( mai_mob_session[id].custom_detect_radius_min,  mai_mob_session[id].custom_detect_radius_max)
 		mai_mob_session[id].custom_position_step = mai_mob_session[id].custom_detect_radius/2
+		mai_mob_session[id].visual = obj:get_visual_name()
+		mai_mob_session[id].visual_settings = get_npc_visual_settings(mai_mob_session[id].visual)
 		mai_mob_session[id].subscribe = false
 		npc_count = npc_count + 1
 		mai_npc_anomalies_interaction(obj, false, true)
@@ -111,7 +115,7 @@ function mai_subscribe(obj, _type, text, force)
 end
 
 function mai_unsubscribe(obj, _type, text)
-	if _type == "npc" then
+	if _type == "npc" or _type == "npc_serv" then
 		local id = obj:id()
 		if not mai_mob_session[id] then
 			return
@@ -249,7 +253,60 @@ function get_npc_settings(npc)
 	return t[community][rank]
 end
 
+function get_npc_visual_settings(npc_visual)
+	if mai_npc_settings_by_visual[npc_visual] then
+		return mai_npc_settings_by_visual[npc_visual]
+	else
+		if not mai_npc_settings_by_visual[npc_visual] then
+			mai_npc_settings_by_visual[npc_visual] = {}
+		end
+		if not mai_npc_settings_file:section_exist(npc_visual) then
+			mai_npc_settings_by_visual[npc_visual].standard = true
+			_dbg_printf("~[MAI][%s][get_npc_visual_settings] %s not exist in cfg(mai_visual_settings.ltx), set damage to standard", sn, npc_visual)
+		else
+			local t_ignore_string = mai_npc_settings_file:r_string(npc_visual,"ignore_list")
+			mai_npc_settings_by_visual[npc_visual].ignore = str_explode(t_ignore_string, ",")
+			local t_damage_string = mai_npc_settings_file:r_string(npc_visual,"damage_list")
+			local damage_temp_strs = str_explode(t_damage_string, ",")
+			mai_npc_settings_by_visual[npc_visual].damage = {}
+			for k, v in pairs(damage_temp_strs) do
+				if v then
+					local t = str_explode(v, "|")
+					mai_npc_settings_by_visual[npc_visual].damage[t[1]] = tonumber(t[2])
+					_dbg_printf("~[MAI][%s][get_npc_visual_settings] VISUAl[%s] DAMAGE MULT %s -> %s",sn, npc_visual, t[1], tonumber(t[2]))
+				end
+			end
+			mai_npc_settings_by_visual[npc_visual].standard = false			
+		end
+		return mai_npc_settings_by_visual[npc_visual]
+	end
+end
+
+function get_npc_dmg_mult(mob, anomaly)
+	local id = mob:id()
+		if mai_mob_session[id].visual_settings.standard then return 1.0 end
+		for k, v in pairs(mai_mob_session[id].visual_settings.damage) do
+			if k and v then
+				 if sf(anomaly:name(), k) then
+					_dbg_printf("-[MAI][%s][get_npc_dmg_mult] NPC[%s] TAKE ANOM[%s, %s] DAMAGE MULTUPLY [%s]", sn, mob:name(), anomaly:name(), k, v)
+					return mai_mob_session[id].visual_settings.damage[k]
+				 end
+			end
+		end
+	return 1.0
+end
+
 function is_npc_ignore_anom(mob, anomaly)
+	local id = mob:id()
+		if mai_mob_session[id].visual_settings.standard then return false end
+		for _, v in pairs(mai_mob_session[id].visual_settings.ignore) do
+			if v then
+				 if sf(anomaly:name(), v) then
+					_dbg_printf("-[MAI][%s][is_npc_ignore_anom] NPC[%s] IGNORE ANOM[%s, %s]",sn, mob:name(), anomaly:name(), v)
+					return true
+				 end
+			end
+		end
 	return false
 end
 
@@ -331,7 +388,7 @@ function mob_get_all_nearest_not_ignore_anoms(mob, radius)
             else
 				_dbg_printf("! [MAI][%s][mob_get_all_nearest_not_ignore_anoms] NOT RADIUS FOR ANOM [%s, %s, %s]", sn, anom:name(), anom:section_name(), anom.id)
 				if not mod_dbg then
-					--printf("! ANOMALY WITHOUT RADIUS [%s][%s]", cur_level, anom:name())
+					printf("! ANOMALY WITHOUT RADIUS [%s][%s]", cur_level, anom:name())
 				end
                 damage_radius = 10
             end
@@ -384,7 +441,7 @@ function _dbg_printf(str, ...)
 	end
 end
 
-local show = true
+local show = false
 function sim_object_level_name(s_obj)
     return alife():level_name(game_graph():vertex(s_obj.m_game_vertex_id):level_id())
 end
@@ -411,17 +468,22 @@ function on_option_change()
 end
 
 function mai_unsubscribe_all()
-	if not (db.OnlineStalkers) then
-		return
-	end
-	for i,v in ipairs(db.OnlineStalkers) do 
-		if (v) then 
-			local npc = level.object_by_id(v)
-			if npc and mai_subscribed(npc, "npc") then
-				mai_unsubscribe(npc, "npc", "~[MAI]["..sn.."][mai_unsubscribe_all] TRY UNSUBSCRIBE NPC ["..npc:name().."]")
+	if mai_mob_session then
+		for k, v in pairs(mai_mob_session) do
+			local obj = level.object_by_id(k)
+			if obj then
+				mai_unsubscribe(obj, "npc", "~[MAI]["..sn.."][mai_unsubscribe_all] TRY UNSUBSCRIBE NPC ["..obj:name().."]")
+			else
+				printf("![MAI][%s][mai_unsubscribe_all] TRASH IN mai_mob_session[%s] - REMOVE", sn, k)
+				mai_mob_session[k] = nil
+				npc_count = npc_count - 1
 			end
 		end
+		--mai_mob_session = nil
+		--mai_mob_session = {}
+		--npc_count = 0
 	end
+	printf("-[MAI][%s][mai_unsubscribe_all] ALL NPC UNSUB DONE[%s]", sn, npc_count)
 end
 
 function mai_subscribe_all()
@@ -431,21 +493,40 @@ function mai_subscribe_all()
 	for i,v in ipairs(db.OnlineStalkers) do 
 		if (v) then 
 			local npc = level.object_by_id(v)
-			if npc then
+			if npc and npc:alive() then
 				mai_subscribe(npc, "npc", "~[MAI]["..sn.."][mai_subscribe_all] TRY SUBSCRIBE NPC ["..npc:name().."]", true)
 			end
 		end
 	end
+	printf("-[MAI][%s][mai_unsubscribe_all] ALL NPC SUB DONE[%s]", sn, npc_count)
 end
 
 function actor_on_interaction(a, b, c)
 	if a == "anomalies" and (c == "emission_start" or c == "psi_storm_start") then
 		_dbg_printf("~[MAI][%s][actor_on_interaction] SURGE START [%s]", sn, c)
-		mai_unsubscribe_all()
+		if zz_allc0r3_mai_callbacks.sleep_is_active == false then
+			mai_unsubscribe_all()
+		end
 	end
 	if a == "anomalies" and (c == "emission_end" or c == "psi_storm_end") then
 		_dbg_printf("~[MAI][%s][actor_on_interaction] SURGE END [%s]", sn, c)
-		mai_subscribe_all()
+		if zz_allc0r3_mai_callbacks.sleep_is_active == false then
+			--mai_unsubscribe_all()
+			mai_subscribe_all()
+		end
+		show = false
+		_dbg_show_anoms()
+	end
+end
+
+function actor_on_sleep_new(sleep)
+	if sleep then
+		_dbg_printf("~[MAI][%s][actor_on_sleep] SLEEP START [%s]", sn, sleep)
+		mai_unsubscribe_all()	
+	else
+		_dbg_printf("~[MAI][%s][actor_on_sleep] SLEEP END [%s]", sn, sleep)
+		--mai_unsubscribe_all()
+		mai_subscribe_all()	
 	end
 end
 
@@ -464,6 +545,7 @@ function on_game_start()
 	RegisterScriptCallback("save_state", save_state)
 	RegisterScriptCallback("on_option_change", on_option_change)
 	RegisterScriptCallback("actor_on_interaction", actor_on_interaction)
+	RegisterScriptCallback("actor_on_sleep_new", actor_on_sleep_new)
     on_option_change()
 end
 

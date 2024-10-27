@@ -46,6 +46,21 @@ mai_always_ignore_anom = {
 	"agr_torrid_zone",
 	"yan_tunnel_zone_zhar", --херня без радиуса
 	
+	--with out radius
+	"red_zone_mine_electric_weak",
+	"red_zone_mine_thermal_strong_0018",
+	"red_zone_mine_thermal_strong_0004",
+	"red_zone_mine_thermal_strong_0020",
+	"red_zone_mine_thermal_strong_0010",
+	"red_zone_mine_thermal_strong_0017",
+	"red_zone_mine_thermal_strong_0019",
+	"red_zone_mine_thermal_strong_0005",
+	"red_zone_mine_thermal_strong_0021",
+	"red_zone_mine_thermal_strong_0022",
+	"red_zone_mine_thermal_strong_0000",
+	"red_zone_mine_thermal_strong_0023",
+	"red_zone_mine_thermal_strong_0003",
+	
 	--имена
 	--Кордон. Поле между Северным КПП и Мостом, недалеко от запора
 	"esc_zone_mine_gravitational_weak_0025",

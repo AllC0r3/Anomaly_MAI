@@ -27,6 +27,13 @@ function mai_on_npc_companion_change(npc, comp)
 	zz_allc0r3_mai_main.mai_subscribe(npc, "npc", "~[MAI]["..sn.."][mai_on_npc_companion_change] TRY SUBSCRIBE NPC ["..npc:name().."]")
 end
 
+--
+function mai_on_npc_visual_change(npc, vis)
+	zz_allc0r3_mai_main.mai_unsubscribe(npc, "npc", "~[MAI]["..sn.."][mai_on_npc_visual_change] TRY UNSUBSCRIBE NPC ["..npc:name().."]")
+	zz_allc0r3_mai_main.mai_subscribe(npc, "npc", "~[MAI]["..sn.."][mai_on_npc_visual_change] TRY SUBSCRIBE NPC ["..npc:name().."]")
+end
+--
+
 function mai_on_npc_corpse_loot(npc, corpse_looting)
 	if corpse_looting then
 		zz_allc0r3_mai_main.mai_unsubscribe(npc, "npc", "~[MAI]["..sn.."][mai_on_npc_corpse_loot] TRY UNSUBSCRIBE NPC ["..npc:name().."]")
@@ -35,6 +42,18 @@ function mai_on_npc_corpse_loot(npc, corpse_looting)
 	end
 end
 
+function mai_on_npc_kill_wounded(npc, kill_wounded)
+	if kill_wounded then
+		zz_allc0r3_mai_main.mai_unsubscribe(npc, "npc", "~[MAI]["..sn.."][mai_on_npc_kill_wounded] TRY UNSUBSCRIBE NPC ["..npc:name().."]")
+	else
+		zz_allc0r3_mai_main.mai_subscribe(npc, "npc", "~[MAI]["..sn.."][mai_on_npc_kill_wounded] TRY SUBSCRIBE NPC ["..npc:name().."]")
+	end
+end
+
+--[[
+function server_entity_on_unregister(se_obj)
+	zz_allc0r3_mai_main.mai_unsubscribe(se_obj, "npc_serv", "~[MAI]["..sn.."][server_entity_on_unregister] TRY UNSUBSCRIBE NPC ["..se_obj:name().."]")
+end]]
 
 function mai_on_npc_before_hit(npc,shit,bone_id,flags)
 	if not npc then return end
@@ -62,6 +81,7 @@ function mai_on_npc_before_hit(npc,shit,bone_id,flags)
 			return					
 		end
 		_dbg("-[MAI][%s][mai_on_npc_before_hit] SUBSCRIBED NPC[%s], DAMAGED BY %s", sn, npc:name(), anomaly:name())
+		shit.power = shit.power * zz_allc0r3_mai_main.get_npc_dmg_mult(npc, anomaly)
 	end
 end
 
@@ -73,5 +93,8 @@ function on_game_start()
 	RegisterScriptCallback("npc_on_before_hit", mai_on_npc_before_hit)
 	RegisterScriptCallback("npc_on_community_change", mai_on_npc_community_change)
 	RegisterScriptCallback("npc_on_companion_change", mai_on_npc_companion_change)
+	--RegisterScriptCallback("npc_on_visual_change", mai_on_npc_visual_change)
 	RegisterScriptCallback("npc_on_corpse_loot", mai_on_npc_corpse_loot)
+	RegisterScriptCallback("npc_on_kill_wounded", mai_on_npc_kill_wounded)
+	--RegisterScriptCallback("server_entity_on_unregister", server_entity_on_unregister)	
 end

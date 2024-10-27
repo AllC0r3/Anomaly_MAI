@@ -4,16 +4,17 @@ local sn = script_name()
 function npc_on_net_spawn(npc, sobj)
 	local id = npc:id()  
 	if not npc_table[id] then
-		local vis = npc:get_visual_name()
+		--local vis = npc:get_visual_name()
 		local comp = npc:has_info("npcx_is_companion")
 		local comm = npc:character_community()
 		local level = level.name() 
 		npc_table[id] = {}
-		npc_table[id][1] = vis 
+		--npc_table[id][1] = vis 
 		npc_table[id][2] = comm
 		npc_table[id][3] = comp
 		npc_table[id][4] = level
 		npc_table[id][5] = xr_corpse_detection.is_under_corpse_detection(npc)
+		npc_table[id][6] = xrs_kill_wounded.is_under_kill_wounded(npc)
 	end
 end
 function npc_on_net_destroy(npc)
@@ -22,25 +23,27 @@ end
 function npc_on_death_callback(npc, who)
 	npc_table[npc:id()] = nil
 end
-AddScriptCallback("npc_on_visual_change")
+--AddScriptCallback("npc_on_visual_change")
 AddScriptCallback("npc_on_community_change")
 AddScriptCallback("npc_on_companion_change")
 AddScriptCallback("npc_on_level_change")
 AddScriptCallback("npc_on_corpse_loot")
+AddScriptCallback("npc_on_kill_wounded")
 function npc_on_update(npc, st)
     if not npc or not npc:alive() or not npc_table[npc:id()] then
         return
     end
 	local id = npc:id()
-	local vis = npc:get_visual_name()
+	--local vis = npc:get_visual_name()
 	local comp = npc:has_info("npcx_is_companion")
 	local comm = npc:character_community()
 	local level = level.name()
 	local corpse_loot = xr_corpse_detection.is_under_corpse_detection(npc)
-	if npc_table[id][1] ~= vis then
+	local kill_wounded = xrs_kill_wounded.is_under_kill_wounded(npc)
+	--[[if npc_table[id][1] ~= vis then
 		npc_table[id][1] = vis
 		SendScriptCallback("npc_on_visual_change", npc, vis)
-	end
+	end]]
 	if npc_table[id][3] ~= comp then
 		npc_table[id][3] = comp
 		SendScriptCallback("npc_on_companion_change", npc, comp)
@@ -56,6 +59,10 @@ function npc_on_update(npc, st)
 	if npc_table[id][5] ~= corpse_loot then
 		npc_table[id][5] = corpse_loot
 		SendScriptCallback("npc_on_corpse_loot", npc, corpse_loot)
+	end
+	if npc_table[id][6] ~= kill_wounded then
+		npc_table[id][6] = kill_wounded
+		SendScriptCallback("npc_on_kill_wounded", npc, kill_wounded)
 	end
 end
 AddScriptCallback("tm_give_task")
@@ -100,6 +107,21 @@ function xr_motivator.motivator_binder.death_callback(self, victim, who)
 		SendScriptCallback("npc_on_death_callback_new", victim, who)
 	end
 end
+AddScriptCallback("actor_on_sleep_new")
+sleep_is_active = false
+local tmr = 0
+function actor_on_update()
+	local tg = time_global()
+	if tmr > tg then return end
+	tmr = tg + 200
+	if not sleep_is_active and has_alife_info("sleep_active") then
+		SendScriptCallback("actor_on_sleep_new", has_alife_info("sleep_active"))
+		sleep_is_active = true
+	elseif  sleep_is_active and not has_alife_info("sleep_active") then
+		SendScriptCallback("actor_on_sleep_new", has_alife_info("sleep_active"))
+		sleep_is_active = false		
+	end
+end
 function on_game_start()
     RegisterScriptCallback("npc_on_net_spawn",npc_on_net_spawn)
     RegisterScriptCallback("npc_on_net_destroy",npc_on_net_destroy)
@@ -108,4 +130,5 @@ function on_game_start()
 	RegisterScriptCallback("load_state", load_state)
 	RegisterScriptCallback("save_state", save_state)
 	RegisterScriptCallback("server_entity_on_unregister", server_entity_on_unregister)
+	RegisterScriptCallback("actor_on_update", actor_on_update)
 end
