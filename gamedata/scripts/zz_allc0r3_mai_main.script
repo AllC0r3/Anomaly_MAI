@@ -346,6 +346,7 @@ end
 function is_ignore_npc(npc)
 	local id = npc:id()
 	if zz_allc0r3_mai_npc_settings.demonized_ignore_npc[npc:section()] or
+		zz_allc0r3_mai_npc_settings.demonized_ignore_npc[npc:profile_name()] or
 	   get_object_story_id(id) or
 	   IsTrader(mob)
 	then
