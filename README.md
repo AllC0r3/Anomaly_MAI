@@ -1,5 +1,3 @@
-Mobs. Anomalies. Interaction - Finally, the NPCs have learned stay out of Anomalies.
-
 MAI – Mobs.Anomalies.Interaction
 
 -РУССКИЙ
@@ -74,6 +72,7 @@ Donationalerts: https://www.donationalerts.com/r/allc0r3
 Настройка получаемого урона для мутантов (всех)
 В идеале порт CAnomalyDetector из OGSR и CCustomZone getEnabled() вывести в скрипты
 Поддержка Анталогии 1.2 (хотя бы частичная)
+
 Почему стоит попробовать мод?
 
 Мод Mobs.Anomalies.Interaction (MAI) делает игру более реалистичной и интересной. НПС будут избегать опасных мест, что добавит разнообразия в прохождение игры.
@@ -90,6 +89,102 @@ Donationalerts: https://www.donationalerts.com/r/allc0r3
 Сделал переподписание онлайновых НПС после сна игрока
 
 
+
+
 1.00_Beta– 25.10.2024
 
 Первый выпуск
+
+
+--ENG 
+
+MAI – Mobs.Anomalies.Interaction
+
+For a long time, Anomaly was a "problem": NPCs did not evade anomalies, and did not take damage from them. Mobs. Anomalies. Interaction (MAI) helps to solve this problem.
+
+Who is the author?
+
+Anomaly Evade - I have not found the nickname of the author of the original anomaly evade idea. Part of code from ogse_anomaly_evader.script script in OLR 3.0 mode
+
+List of important NPCs - taken from the NPC Die For Real mod, by TheMrDemonized
+
+What does the mod do?
+
+The mod forces NPCs to EVADE anomalies.
+
+Donations
+
+If you have the desire and opportunity, you can support me in the following ways:
+
+TON: UQBp9LQ1T7nj05EKdztDtod7220bhPxeVj_uoG8sAJWm7-V5
+
+Donationalerts: https://www.donationalerts.com/r/allc0r3
+
+Efficiency
+
+The more simulation NPCs online, the lower the performance of the game. With 100 online simulation NPCs, performance drops by about 5 frames per second. Everything very much depends on the situation, location, and the number of anomalies around the NPC.
+
+Short description
+
+Quest NPCs, companions, merchants and mechanics are protected from anomalies. Some anomalies do not cause damage to NPCs (the list will be on release), made to avoid NPC stuck in anomalies.
+
+List (full i make on release):
+
+All moving anomalies.
+Anomaly fields on the Cordon: near the locomotive and the village.
+Thermal in tunnel. Wild Territory
+
+The quality of the evade depends on the community, rank, and model of the NPC.
+
+There are exceptions:
+
+Sin is the children of the zone, so the anomalies do not notice them.
+Zombie stalkers are immune to damage from anomalies.
+Monolith - they are protected by the Great Monolith.
+
+Installation
+
+- Mod Organizer 2, the order is unimportant.
+
+Compatibility
+
+Compatible with everything except mods that include Anomaly damage for NPCs.
+Improved support for New Levels (underground locations added to exceptions).
+Improved support for DAO\Arrival (some anomalies added to exceptions).
+Improved support for Intimate Enemies Into Surrendering (when changing the community of NPCs, its settings change to the appropriate ones)
+Improved support for Dynamic NPC Armor Visuals
+Support for mods for new community: settings are taken for loner
+Support for mods for new ranks: settings are taken for beginner
+
+Plans
+
+Enter all the anomalies that can cause problems for the NPC.
+Remove anomalies that are configured with an error and put the same ones in their places, but without errors. (It will be a separate add-on, therefore - optional)
+Add anomaly ignoring depending on the NPC model. - It's done! (it remains to be configured)
+Off anomaly damage for mission purposes. (Partially finished, the taskgivers does not receive damage from anomalies, it remains to do the same for the purpose of the task)
+To optimize the performance of the game.
+A full-fledged MCM menu.
+Support for even more mods with new NPCs, Anomalies, Locations
+Legendary monsters such as the controller and burrer can also evade anomalies.
+The poltergeist does not take damage from anomalies at all.
+Adjusting the damage received for mutants (all)
+Ideally, the CAnomalyDetector port from OGSR and CCustomZone getEnabled() should be output to scripts
+Antalogy 1.2 support (at least partial)
+
+Why should I try the mod?
+
+The Mobs.Anomalies.Interaction (MAI) mod makes the game more realistic and interesting. NPCs will evade dangerous places, which will add variety to the game. Have a nice game!
+
+--Changelog:
+
+1.01_Beta – 27.10.2024
+
+Basic support for changing the NPC's visual and, accordingly, support for damage received depending on the visual (or completely ignoring some anomalies). Set up (Sowing Bandits, Svobodovites)
+NPCs do not take damage while finishing off the wounded .
+Added Anomalies without radius in the Red Forest to the exception (later you need to fix all these anomalies)
+Did the re-signing of online NPCs after the player's sleep
+
+1.00_Beta– 25.10.2024
+
+Initial Release
+
